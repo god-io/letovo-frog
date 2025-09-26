@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Frog Sensor Status</title>
+    <title>Статус сенсоров 🐸</title>
     <meta name="viewport" content="width=device-width" />
     <meta name="color-scheme" content="dark light" />
     <style>
@@ -15,7 +15,8 @@
             line-height: 1.4;
 
             background: #556d55;
-            margin: 2em;
+	    background-image: linear-gradient(to bottom, #053731, #006347, #05924e, #58c041, #a8eb12);	
+            margin: 4em;
         }
         .logo {
             width: 300px;
@@ -42,7 +43,7 @@
             justify-content: space-between;
             min-height: 250px;
             width: 200px;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 5px;
             padding: 20px;
             margin: 10px;
@@ -109,20 +110,20 @@
   </head>
   <body>
     <div class="content">
-      <img src="./logo.png" alt="" class="logo"/>
-      <h1>Frog Sensor Status</h1>
+	    <!-- <img src="./logo.png" alt="" class="logo"/> -->
+      <h1>Статус сенсоров 🐸</h1>
       <div class="sensors">
         <div class="sensor" id="Barometer">
           <div class="sensor-header">
-            <div class="sensor-title">Barometer</div>
-            <div class="sensor-status"></div>
+            <div class="sensor-title">Давление и температура</div>
+            <div class="sensor-status" style="width: 35px;"></div>
           </div>
           <div class="sensor-data"></div>
           <div class="sensor-last-updated"></div>
         </div>
         <div class="sensor" id="CO2">
           <div class="sensor-header">
-            <div class="sensor-title">CO2</div>
+		  <div class="sensor-title">CO<sub>2</sub> и CH<sub>4</sub></div>
             <div class="sensor-status"></div>
           </div>
           <div class="sensor-data"></div>
@@ -139,8 +140,9 @@
       </div>
       <div class="other-info-wrapper">
         <div class="other-info">
-            <div class="sensor-title">Other Info</div>
+            <div class="sensor-title">Подключение</div>
             <div id="other-info-content"></div>
+	    <div><a href="/api/hardreset">Перезагрузка ⟳</a></div>
         </div>
       </div>
     </div>
@@ -178,7 +180,7 @@
 
           // Update sensor last updated time
           if (data.lastUpdated !== null) {
-            sensorLastUpdated.innerHTML = `<b>Last updated</b>: ${data.lastUpdated}`;
+            sensorLastUpdated.innerHTML = `<b>Обновлено</b>: ${data.lastUpdated}`;
           }
         };
   
@@ -213,16 +215,17 @@
                 status: defined(data.scd30),
                 data: {
                     'CO2': '',
-                    'Temperature': '',
-                    'Humidity': ''
+		    'CH4': 'в норме',
+                    'Температура': '',
+                    'Влажность': ''
                 },
                 lastUpdated: data.scd30.t,
             };
 
             if (ret.status) {
-                ret.data['CO2'] = data.scd30.co2.toFixed(2) + ' ppm';
-                ret.data['Temperature'] = data.scd30.temperature.toFixed(2) + ' °C';
-                ret.data['Humidity'] = data.scd30.humidity.toFixed(2) + ' %';
+                ret.data['CO2'] = data.scd30.co2.toFixed(0) + ' ppm';
+                ret.data['Температура'] = data.scd30.temperature.toFixed(1) + ' °C';
+                ret.data['Влажность'] = data.scd30.humidity.toFixed(1) + ' %';
             }
 
             return ret;
@@ -238,15 +241,15 @@
             ret = {
                 status: defined(data.dps310),
                 data: {
-                    'Pressure': '',
-                    'Temperature': ''
+                    'Давление': '',
+                    'Температура': ''
                 },
                 lastUpdated: data.dps310.t,
             };
 
             if (ret.status) {
-                ret.data['Pressure'] = data.dps310.pressure.toFixed(2) + ' hPa';
-                ret.data['Temperature'] = data.dps310.temperature.toFixed(2) + ' °C';
+                ret.data['Давление'] = data.dps310.pressure.toFixed(1) + ' гПа';
+                ret.data['Температура'] = data.dps310.temperature.toFixed(1) + ' °C';
             }
 
             return ret;
@@ -263,18 +266,18 @@
             ret = {
                 status: defined(data.gps),
                 data: {
-                    'Latitude': '',
-                    'Longitude': '',
-                    'Altitude': '',
-                    'GNSS': data.gps.has_fix ? 'Fix' : 'No Fix'
+                    'Широта': '',
+                    'Долгота': '',
+                    'Высота': '',
+                    'GNSS': data.gps.has_fix ? 'Фиксация' : 'Нет фиксации'
                 },
                 lastUpdated: data.gps.t,
             };
 
             if (ret.status && data.gps.has_fix) {
-                ret.data.Latitude = `${data.gps.latitude.toFixed(2)}°`;
-                ret.data.Longitude = `${data.gps.longitude.toFixed(2)}°`;
-                ret.data.Altitude = `${data.gps.altitude.toFixed(2)} m`;
+                ret.data['Широта'] = `${data.gps.latitude.toFixed(2)}°`;
+                ret.data['Долгота'] = `${data.gps.longitude.toFixed(2)}°`;
+                ret.data['Высота'] = `${data.gps.altitude.toFixed(0)} м`;
             }
 
             return ret;

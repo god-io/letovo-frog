@@ -4,7 +4,7 @@ PORT_DIR := ${MP_DIR}/ports/esp32
 BOARD := ribbit
 BUILD_DIR := ${PORT_DIR}/build-${BOARD}
 
-DEVICE := /dev/ttyACM*
+DEVICE := /dev/ttyACM0
 
 .PHONY: build
 build: ui

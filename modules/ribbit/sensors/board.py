@@ -51,11 +51,12 @@ class Memory(_base.PollingSensor):
 
     def export(self):
         gc.collect()
-        self.allocated, self.free = gc.mem_alloc(), gc.mem_free()
+        self.allocated = gc.mem_alloc()
+        self.free = gc.mem_free()
         return {
             "t": isotime(time.time()),
             "@type": "ribbitnetwork.sensor.DeviceMemory",
             "sensor_model": "frog",
-            "allocated": allocated,
-            "total": alloc + free,
+            "allocated": self.allocated,
+            "total": self.allocated + self.free,
         }

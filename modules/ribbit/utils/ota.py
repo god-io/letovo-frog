@@ -27,7 +27,7 @@ class OTAManager:
         if self._in_simulator:
             self._logger.info("Running in simulator: skipping update")
             return
-
+        
         import esp32
 
         self._logger.info("Starting OTA update")

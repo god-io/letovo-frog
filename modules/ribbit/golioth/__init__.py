@@ -54,7 +54,7 @@ CONFIG_KEYS = [
     _config.Integer(name=CONFIG_GOLIOTH_PORT, default=5684),
     _config.String(name=CONFIG_GOLIOTH_USER, default=None),
     _config.String(name=CONFIG_GOLIOTH_PASSWORD, default=None, protected=True),
-    _config.Boolean(name=CONFIG_GOLIOTH_OTA_ENABLED, default=True),
+    _config.Boolean(name=CONFIG_GOLIOTH_OTA_ENABLED, default=False),
 ]
 
 
@@ -76,7 +76,9 @@ class Golioth:
         with self._config.watch(*_CONFIG_KEYS) as cfg_watcher:
             while True:
                 enabled, host, port, user, password, self._ota_enabled = cfg_watcher.get()
-
+                ### COMPLETELY DISABLE OTA UPDATE!!!!!
+                self._ota_enabled = False
+                ### FUCKK
                 enabled = enabled and (user is not None and password is not None)
 
                 if self._coap is not None:

@@ -9,7 +9,7 @@ from ._static import assets
 from .config import DOMAIN_LOCAL, DOMAIN_NAMES
 from ribbit.utils.time import isotime
 
-
+from machine import reset
 Request.max_content_length = 1 << 30
 
 
@@ -73,6 +73,10 @@ def build_app(registry):
                     }
 
             await ws.send(json.dumps(ret))
+     
+    @app.route("/api/hardreset")
+    def hard_reset(request):
+        reset()
 
     @app.route("/api/config")
     def config_get(request):

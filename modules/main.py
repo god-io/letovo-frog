@@ -1,6 +1,5 @@
 import uasyncio as asyncio
 
-
 def _setup_improv(registry):
     import binascii
 
@@ -76,13 +75,40 @@ async def _main():
     import ribbit.utils.i2c as _i2c
     import ribbit.utils.ota as _ota
 
+    sdcard = False
+    print('Try to create card')
+    is_sd = False
+    try:
+        sd = machine.SDCard(slot=3, width=1, cs=machine.Pin(10), miso=machine.Pin(13), mosi=machine.Pin(11),sck=machine.Pin(12), freq=10000000)
+        print('Created sdcard')
+        is_sd = True
+    except Exception:
+        print('SD card not found')
+    
+    if is_sd:
+        print('Try to mount FAT FS')
+        try:
+            vfs = os.VfsFat(sd)
+            os.mount(vfs, '/sdcard')
+            sdcard = True
+        except Exception:
+            print('Cannot mount vfs')
+    
+    if sdcard:
+        print('Write header')
+        with open('/sdcard/frogdata.txt', 'a') as fl:
+            fl.write('\n')
+            fl.write('time_UTC;temperature;pressure;humidity;co2;latitude;longitude;altitude\n') 
+    
     class Registry:
         pass
 
     registry = Registry()
+    ### sd card
+    registry.is_sd_card = sdcard
 
     _aggregate.SensorAggregator(registry)
-    _heartbeat.Heartbeat(in_simulator)
+    _heartbeat.Heartbeat(in_simulator, sdcard)
 
     config_schema = []
     if not in_simulator:
@@ -179,7 +205,7 @@ async def _main():
 
     if not in_simulator:
         registry.i2c_bus = _i2c.LockableI2CBus(
-            0, scl=machine.Pin(4), sda=machine.Pin(3), freq=50000
+            0, scl=machine.Pin(4), sda=machine.Pin(5), freq=50000
         )
 
         # Turn on the I2C power:

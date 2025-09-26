@@ -1,4 +1,5 @@
 import time
+from ribbit.utils.time import isotime
 
 import uasyncio as asyncio
 from micropython import const
@@ -35,7 +36,7 @@ def _obfuscate_gps_coordinate(coordinate):
     Github Issue: #30
     https://github.com/Ribbit-Network/ribbit-network-frog-software/issues/30
     """
-    gps_digits_precision = 2
+    gps_digits_precision = 3
 
     obfuscated = round(coordinate, gps_digits_precision)
     return obfuscated
@@ -67,6 +68,7 @@ class GPS(_base.BaseSensor):
         self.satellites = 0
         self._first_fix = False
         self._last_time_update = None
+        
 
         self._stop_event = asyncio.Event()
 
@@ -249,6 +251,7 @@ class GPS(_base.BaseSensor):
             if self._time_manager is not None:
                 t = time.mktime((year, month, day, hour, minute, second, 0, 0))
                 self._time_manager.set_time(_time.TIMESOURCE_GPS, t)
+                
 
     async def read_once(self):
         pass
